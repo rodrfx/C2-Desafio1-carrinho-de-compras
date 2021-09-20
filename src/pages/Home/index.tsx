@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { MdAddShoppingCart } from "react-icons/md";
 
-import { ProductList } from "./styles";
 import { api } from "../../services/api";
-import { formatPrice } from "../../util/format";
 import { useCart } from "../../hooks/useCart";
+import { formatPrice } from "../../util/format";
+import { toast } from "react-toastify";
+
+import { MdAddShoppingCart } from "react-icons/md";
+import { ProductList } from "./styles";
 
 interface Product {
   id: number;
@@ -30,15 +32,13 @@ const Home = (): JSX.Element => {
   // }, {} as CartItemsAmount)
 
   useEffect(() => {
-    api
-      .get("/products")
-      .then((response) => setProducts(response.data))
-      .catch((error) => console.error(error));
-  }, []);
-
-  useEffect(() => {
-    async function loadProducts() {
-      // TODO
+    function loadProducts() {
+      api
+        .get("/products")
+        .then((response) => setProducts(response.data))
+        .catch((error) =>
+          toast.error("Erro na requisição, tente novamente!", error)
+        );
     }
 
     loadProducts();
@@ -53,7 +53,7 @@ const Home = (): JSX.Element => {
       {products &&
         products.map((product) => {
           return (
-            <li>
+            <li key={product.id}>
               <img src={product.image} alt={product.title} />
               <strong>{product.title}</strong>
               <span>{formatPrice(product.price)}</span>
@@ -64,7 +64,7 @@ const Home = (): JSX.Element => {
               >
                 <div data-testid="cart-product-quantity">
                   <MdAddShoppingCart size={16} color="#FFF" />
-                  {/* {cartItemsAmount[product.id] || 0} */} 2
+                  {/* {cartItemsAmount[product.id] || 0} */} 1
                 </div>
 
                 <span>ADICIONAR AO CARRINHO</span>
