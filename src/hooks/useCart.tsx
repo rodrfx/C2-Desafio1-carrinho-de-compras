@@ -35,12 +35,14 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
   const addProduct = async (productId: number) => {
     try {
       const updatedCart = [...cart];
-      const productsExtist = updatedCart.find(
+      const productExtist = updatedCart.find(
         (product) => product.id === productId
       );
+
       const stock = await api.get(`/stock/${productId}`);
       const stockAmount = stock.data.amount;
-      const currentAmount = productsExtist ? stockAmount : 0;
+
+      const currentAmount = productExtist ? productExtist.amount : 0;
       const amount = currentAmount + 1;
 
       if (amount > stockAmount) {
@@ -48,8 +50,8 @@ export function CartProvider({ children }: CartProviderProps): JSX.Element {
         return;
       }
 
-      if (productsExtist) {
-        productsExtist.amount = amount;
+      if (productExtist) {
+        productExtist.amount = amount;
       } else {
         const product = await api.get(`/products/${productId}`);
 
